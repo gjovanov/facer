@@ -10,10 +10,9 @@ ENV PORT 3000
 RUN apk add --update --no-cache --virtual .build-deps \
   gcc g++ make libc6-compat git && \
   apk add --no-cache --virtual .build-deps2 \
-  vips-dev fftw-dev build-base python \
   --repository http://nl.alpinelinux.org/alpine/edge/testing \
   --repository http://nl.alpinelinux.org/alpine/edge/main && \
-  cat /etc/alpine-release && \
+  vips-dev fftw-dev build-base python && \
   cd / && \
   git clone https://github.com/gjovanov/facer.git && \
   cd /facer && \
