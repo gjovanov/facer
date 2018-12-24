@@ -8,16 +8,19 @@ ENV PORT 3000
 
 # Install packages & git clone source code and build the application
 RUN apk add --update --no-cache --virtual .build-deps \
-  --repository http://nl.alpinelinux.org/alpine/edge/testing/ \
+  gcc g++ make libc6-compat git && \
+  apk add --no-cache --virtual .build-deps2 \
+  vips-dev fftw-dev build-base python \
+  --repository http://nl.alpinelinux.org/alpine/edge/testing \
   --repository http://nl.alpinelinux.org/alpine/edge/main && \
-  gcc g++ make libc6-compat git vips-dev fftw-dev build-base python \
+  cat /etc/alpine-release && \
   cd / && \
   git clone https://github.com/gjovanov/facer.git && \
   cd /facer && \
   npm i pm2 -g && \
   npm i --production && \
   npm run build && \
-  apk del .build-deps && \
+  apk del .build-deps .build-deps2 && \
   rm -rf /var/cache/apk/*
 
 # Volumes
