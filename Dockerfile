@@ -8,7 +8,7 @@ ENV PORT 3000
 
 # Install packages & git clone source code and build the application
 RUN apk add --update --no-cache --virtual .build-deps \
-  gcc g++ make git && \
+  gcc g++ make git python && \
   apk add --no-cache vips-dev fftw-dev libc6-compat \
   --repository http://nl.alpinelinux.org/alpine/edge/testing/ \
   --repository http://nl.alpinelinux.org/alpine/edge/main && \
