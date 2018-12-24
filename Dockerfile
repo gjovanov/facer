@@ -13,12 +13,12 @@ VOLUME /facer/data
 
 # Install packages & git clone source code and build the application
 RUN apk add --update --no-cache --virtual .build-deps \
-  gcc g++ make libc6-compat git && \
+  gcc g++ make libc6-compat git openssh-client && \
   apk add --no-cache vips-dev fftw-dev build-base python \
   --repository http://nl.alpinelinux.org/alpine/edge/testing/ \
   --repository http://nl.alpinelinux.org/alpine/edge/main && \
   cat /etc/alpine-release && \
-  git clone git@github.com:gjovanov/facer.git \
+  git clone https://github.com/gjovanov/facer.git \
   node -v && \
   npm i pm2 -g \
   npm i --production && \
