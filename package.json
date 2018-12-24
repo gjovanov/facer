@@ -25,15 +25,15 @@
     "rimraf": "^2.6.2",
     "sharp": "^0.21.0",
     "vuetify": "^1.2.4",
-    "webrtc-adapter": "^7.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.11.0",
+    "webrtc-adapter": "^7.0.0",
     "babel-eslint": "^8.2.1",
     "eslint": "^5.0.1",
     "eslint-loader": "^2.0.0",
     "eslint-plugin-vue": "^4.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
