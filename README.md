@@ -32,3 +32,10 @@ Or pull the one from Docker Hub
 ## Docker run
 a) `docker run -d --name face --restart always -p 8080:3000 gjovanov/facer`
 b) `docker run -d --name facer --restart always -p 8080:3000 -v C:\dev\gjovanov\facer\data:/facer/data gjovanov/facer`
+c) `docker run -d --name facer \
+    --hostname facer \
+    --restart always \
+    -p 8081:3000 \
+    -v /gjovanov/facer/data:/facer/data \
+    --net=bridge \
+    gjovanov/facer`
