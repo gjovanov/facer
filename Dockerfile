@@ -18,7 +18,7 @@ RUN apk add --update --no-cache --virtual .build-deps \
   npm i pm2 -g && \
   npm i --production && \
   npm run build && \
-  apk del .build-deps vips-dev fftw-dev && \
+  apk del .build-deps fftw-dev && \
   rm -rf /var/cache/apk/*
 
 # Volumes
