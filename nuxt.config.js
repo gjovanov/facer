@@ -105,7 +105,7 @@ const config = {
 if (isDev) {
   config.axios.baseURL = `http://${env.HOST}:${env.PORT_API}`
 } else {
-  config.axios.baseURL = API_URL
+  config.axios.baseURL = env.API_URL
 }
 
 module.exports = config
