@@ -5,6 +5,8 @@ const env = {
   PORT: process.env.PORT || 3000,
   PORT_API: process.env.PORT_API || 3001
 }
+env.API_URL = process.env.API_URL || `http://localhost:${env.PORT_API}`
+
 const isDev = env.NODE_ENV === 'development'
 const config = {
   mode: 'universal',
@@ -103,7 +105,7 @@ const config = {
 if (isDev) {
   config.axios.baseURL = `http://${env.HOST}:${env.PORT_API}`
 } else {
-  config.axios.baseURL = ''
+  config.axios.baseURL = API_URL
 }
 
 module.exports = config

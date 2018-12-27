@@ -35,6 +35,7 @@ b) `docker run -d --name facer --restart always -p 8080:3000 -v C:\dev\gjovanov\
 c) `docker run -d --name facer \
     --hostname facer \
     --restart always \
+    -e API_URL=https://facer.xplorify.net
     -p 8081:3000 \
     -v /gjovanov/facer/data:/facer/data \
     --net=bridge \
