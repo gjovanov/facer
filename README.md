@@ -37,12 +37,12 @@ Or pull the one from Docker Hub
 
 ## Docker run
 ```docker
-`docker run -d --name facer \
+docker run -d --name facer \
     --hostname facer \
     --restart always \
     -e API_URL=https://facer.xplorify.net \
     -p 8081:3000 \
     -v /gjovanov/facer/data:/facer/data \
     --net=bridge \
-    gjovanov/facer`
+    gjovanov/facer
 ```
