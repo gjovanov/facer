@@ -12,10 +12,10 @@
  - [Docker](https://github.com/docker)
 
 
-# Install dependencies
+# Install
 Run `npm i` in the root folder
 
-# Development & Production Mode
+# Run
 
 ## Development mode
 1. Run `npm run api` for starting the API server 
@@ -25,7 +25,7 @@ Run `npm i` in the root folder
 1. Run `npm run build` for building in production mode
 2. Run `npm run start` for starting in production mode
 
-# Docker support
+# Deploy
 
 ## Docker build
 Either build your own Docker images
