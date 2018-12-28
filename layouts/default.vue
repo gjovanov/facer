@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer :mini-variant="miniVariant" :clipped="clipped" v-model="drawer" fixed app>
+    <v-navigation-drawer :mini-variant="miniVariant" :clipped="clipped" v-model="drawer" permanent fixed app>
       <v-list>
         <v-list-tile v-for="(item, i) in items" :to="item.to" :key="i" router>
           <v-list-tile-action>

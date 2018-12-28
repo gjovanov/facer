@@ -31,7 +31,7 @@
                   wrap>
           <v-flex v-for="(photo, index) in user.photos"
                   :key="photo"
-                  xs4>
+                  xs12 md6 lg4>
             <v-card flat tile class="d-flex">
               <img :id="user.name + index" :src="photo">
             </v-card>

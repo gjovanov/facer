@@ -16,14 +16,14 @@
         Loading...
       </v-progress-circular>
     </v-flex>
-    <v-flex xs6>
+    <v-flex xs12 md6>
       <video
         id="live-video"
         width="320"
         height="247"
         autoplay/>
     </v-flex>
-    <v-flex xs6>
+    <v-flex xs12 md6>
       <canvas
         id="live-canvas"
         width="320"

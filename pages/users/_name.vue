@@ -51,7 +51,7 @@
           <v-card flat>
             <v-btn v-if="isCameraStarted" color="secondary" @click="takePhoto">Take photo</v-btn>
             <v-layout row wrap>
-              <v-flex xs6>
+              <v-flex xs12 md6>
                 <video
                   v-if="isCameraStarted"
                   id="live-video"
@@ -59,7 +59,7 @@
                   height="247"
                   autoplay/>
               </v-flex>
-              <v-flex xs6>
+              <v-flex xs12 md6>
                 <canvas
                   id="live-canvas"
                   width="320"
@@ -72,7 +72,7 @@
     </v-flex>
     <v-flex v-for="(photo, index) in user.photos"
             :key="photo"
-            xs4>
+            xs12 md6 lg4>
       <v-card flat tile class="d-flex">
         <v-btn
           fab
