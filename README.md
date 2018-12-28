@@ -3,10 +3,13 @@
 [![Facer Demo](https://img.youtube.com/vi/rHUQyRe8JyQ/0.jpg)](https://www.youtube.com/watch?v=rHUQyRe8JyQ)
 
  Realtime Face Recognition app using:
- - [FaceApiJS](https://github.com/justadudewhohacks/face-api.js)
+ - [face-api.js](https://github.com/justadudewhohacks/face-api.js)
  - [TensorflowJS](https://github.com/tensorflow/tfjs)
  - [VueJS](https://github.com/vuejs/vue)
+ - [NuxtJS](https://github.com/nuxt/nuxt.js/)
  - [VuetifyJS](https://github.com/vuetifyjs/vuetify)
+ - [ExpressJS](https://github.com/expressjs/expressjs.com)
+ - [Docker](https://github.com/docker)
 
 
 # Install dependencies
@@ -33,9 +36,8 @@ Or pull the one from Docker Hub
 `docker pull gjovanov/facer .`
 
 ## Docker run
-a) `docker run -d --name face --restart always -p 8080:3000 gjovanov/facer`
-b) `docker run -d --name facer --restart always -p 8080:3000 -v C:\dev\gjovanov\facer\data:/facer/data gjovanov/facer`
-c) `docker run -d --name facer \
+```docker
+`docker run -d --name facer \
     --hostname facer \
     --restart always \
     -e API_URL=https://facer.xplorify.net \
@@ -43,3 +45,4 @@ c) `docker run -d --name facer \
     -v /gjovanov/facer/data:/facer/data \
     --net=bridge \
     gjovanov/facer`
+```
