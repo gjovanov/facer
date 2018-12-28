@@ -1,7 +1,7 @@
 {
-  "name": "face-rec",
+  "name": "facer",
   "version": "1.0.0",
-  "description": "Face Recognition PoC",
+  "description": "Facer - Realtime Face Recognition in the browser",
   "author": "Goran Jovanov",
   "private": true,
   "scripts": {

@@ -1,5 +1,8 @@
 # Facer
- Face Recognition app using:
+
+[![Facer Demo](https://img.youtube.com/vi/rHUQyRe8JyQ/0.jpg)](https://www.youtube.com/watch?v=rHUQyRe8JyQ)
+
+ Realtime Face Recognition app using:
  - [FaceApiJS](https://github.com/justadudewhohacks/face-api.js)
  - [TensorflowJS](https://github.com/tensorflow/tfjs)
  - [VueJS](https://github.com/vuejs/vue)
