@@ -30,8 +30,8 @@ export const mutations = {
 
 export const actions = {
   async load({ commit, state }) {
-    commit('loading')
     if (!state.loading && !state.loaded) {
+      commit('loading')
       await Promise.all([
         faceapi.loadFaceRecognitionModel('/data/models'),
         faceapi.loadFaceLandmarkTinyModel('/data/models'),
