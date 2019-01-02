@@ -30,6 +30,9 @@ Run `npm i` in the root folder
 ## Docker build
 Either build your own Docker images
 - `docker build -t gjovanov/facer .`
+
+or us the build script with your own docker hub username and image name:
+
 - `./build.sh`
 
 
@@ -48,3 +51,9 @@ docker run -d --name facer \
     --net=bridge \
     gjovanov/facer
 ```
+
+## Docker push
+- `docker push gjovanov\facer`
+
+or use the release.sh script with your own docker hub username and image name:
+- `./release.sh`
