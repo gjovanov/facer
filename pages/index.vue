@@ -55,6 +55,9 @@
 <script>
 
 export default {
-
+  async beforeMount() {
+    let self = this;
+    self.$store.dispatch('face/load')
+  },
 }
 </script>

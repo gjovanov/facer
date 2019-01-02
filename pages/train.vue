@@ -67,21 +67,7 @@ export default {
   async beforeMount() {
     await this.$store.dispatch('face/load')
   },
-  // mounted() {
-  //   const self = this
-  //   self.users.forEach(user => {
-  //     user.photos.forEach(async (photo, index) => {
-  //       const image = document.getElementById(`${user.name}${index}`)
-  //       image.onload = async () => {
-  //         const detections = await self.$store.dispatch('face/getFaceDetections', await self.$store.dispatch('face/createCanvas', image))
-  //         detections.forEach(async item => {
-  //         const shifted = item.forSize(image.width, image.height)
-  //         self.$store.dispatch('face/drawLandmarks', { image, landmarks: shifted._unshiftedLandmarks } )
-  //         })
-  //        }
-  //     })
-  //   })
-  // },
+
   methods: {
     async train() {
       const self = this

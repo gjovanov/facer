@@ -21,6 +21,14 @@
     </v-toolbar>
     <v-content>
       <v-container fluid>
+        <v-progress-circular
+          v-if="loading"
+          :size="200"
+          :width="20"
+          color="red"
+          indeterminate>
+          Loading 7MB models. Please be patient...
+        </v-progress-circular>
         <nuxt/>
       </v-container>
     </v-content>
@@ -54,6 +62,11 @@ export default {
       rightDrawer: false,
       title: "face&reg; - Realtime Face Recognition"
     };
+  },
+  computed: {
+    loading() {
+      return this.$store.state.face.loading
+    }
   }
 };
 </script>

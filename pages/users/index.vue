@@ -93,10 +93,15 @@ export default {
       ],
     }
   },
+
   computed: {
     users() {
       return this.$store.state.user.list;
     }
+  },
+
+  async beforeMount() {
+    await this.$store.dispatch('face/load')
   },
 
   methods: {
