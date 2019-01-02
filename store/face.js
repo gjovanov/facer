@@ -2,6 +2,7 @@ import * as faceapi from 'face-api.js'
 
 export const state = () => ({
   faces: [],
+  loading: false,
   loaded: false,
   faceMatcher: null,
   recognizeOptions: {
@@ -10,6 +11,10 @@ export const state = () => ({
 })
 
 export const mutations = {
+  loading(state) {
+    state.loading = true
+  },
+
   load(state) {
     state.loaded = true
   },
@@ -25,10 +30,13 @@ export const mutations = {
 
 export const actions = {
   async load({ commit, state }) {
-    if (!state.loaded) {
-      await faceapi.loadFaceRecognitionModel('/data/models')
-      await faceapi.loadFaceLandmarkTinyModel('/data/models')
-      await faceapi.loadTinyFaceDetectorModel('/data/models')
+    commit('loading')
+    if (!state.loading && !state.loaded) {
+      await Promise.all([
+        faceapi.loadFaceRecognitionModel('/data/models'),
+        faceapi.loadFaceLandmarkTinyModel('/data/models'),
+        faceapi.loadTinyFaceDetectorModel('/data/models')
+      ])
       commit('load')
     }
   },
