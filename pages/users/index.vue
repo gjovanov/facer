@@ -100,10 +100,6 @@ export default {
     }
   },
 
-  async beforeMount() {
-    await this.$store.dispatch('face/load')
-  },
-
   methods: {
     async register() {
       const self = this

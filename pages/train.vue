@@ -64,9 +64,6 @@ export default {
     await store.dispatch('user/getAll')
       .then(users => self.step += users.length)
   },
-  async beforeMount() {
-    await this.$store.dispatch('face/load')
-  },
 
   methods: {
     async train() {

@@ -54,8 +54,7 @@ export default {
 
   async beforeMount() {
     let self = this;
-    await self.$store.dispatch('face/load')
-      .then(() => self.$store.dispatch('face/getAll'))
+    await self.$store.dispatch('face/getAll')
       .then(() => self.$store.dispatch('face/getFaceMatcher'))
   },
 

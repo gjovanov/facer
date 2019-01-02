@@ -27,7 +27,9 @@
           :width="20"
           color="red"
           indeterminate>
-          Loading 7MB models. Please be patient...
+          Loading 7MB models.
+          <br>
+          Please be patient...
         </v-progress-circular>
         <nuxt/>
       </v-container>
@@ -67,6 +69,10 @@ export default {
     loading() {
       return this.$store.state.face.loading
     }
+  },
+  async mounted() {
+    let self = this
+    await self.$store.dispatch('face/load')
   }
 };
 </script>
