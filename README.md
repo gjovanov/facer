@@ -29,7 +29,9 @@ Run `npm i` in the root folder
 
 ## Docker build
 Either build your own Docker images
-`docker build -t gjovanov/facer .`
+- `docker build -t gjovanov/facer .`
+- `./build.sh`
+
 
 ## Docker pull
 Or pull the one from Docker Hub
