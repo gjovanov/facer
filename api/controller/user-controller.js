@@ -184,8 +184,6 @@ async function uploadFile(upload, req, res) {
         try {
           const oldPath = join(usersFolder, file.filename)
           const newPath = join(usersFolder, req.body.user, file.filename)
-          console.log(oldPath)
-          console.log(newPath)
           const buffer = readFileSync(oldPath)
 
           await sharp(buffer)
