@@ -15,23 +15,23 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
+    "babel-eslint": "^8.2.1",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "cross-env": "^5.2.0",
+    "eslint": "^5.0.1",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-vue": "^4.0.0",
     "express": "^4.16.3",
     "face-api.js": "^0.16.1",
     "multer": "^1.4.1",
     "nuxt": "^2.3.4",
     "rimraf": "^2.6.2",
     "sharp": "^0.21.0",
-    "vuetify": "^1.2.4",
-    "webrtc-adapter": "^7.0.0",
-    "babel-eslint": "^8.2.1",
-    "eslint": "^5.0.1",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-vue": "^4.0.0",
     "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2"
+    "stylus-loader": "^3.0.2",
+    "vuetify": "^1.2.4",
+    "webrtc-adapter": "^7.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"

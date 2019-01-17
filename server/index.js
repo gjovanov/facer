@@ -1,7 +1,12 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
+app.use(bodyParser.json({ limit: "100mb" }))
+app.use(bodyParser.urlencoded({ limit: "100mb", extended: true, parameterLimit: 50000 }))
+
+
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
