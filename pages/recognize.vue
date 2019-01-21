@@ -1,5 +1,7 @@
 <template>
   <v-layout row
+            align-center
+            justify-center
             wrap>
     <v-flex>
       <h1>Recognize</h1>
@@ -15,6 +17,53 @@
       >
         Loading...
       </v-progress-circular>
+    </v-flex>
+    <v-flex v-if="!isProgressActive" xs12>
+      <v-card>
+        <p>
+          <span>
+            Make some facial expressions that demonstrate emotions like
+            <v-icon>sentiment_satisfied_alt</v-icon>
+            <v-icon>sentiment_very_dissatisfied</v-icon>
+          </span>
+        </p>
+        <v-card-actions class="justify-center">
+          <v-btn-toggle v-model="withOptions" multiple>
+            <v-btn>
+              <v-icon>check_box_outline_blank</v-icon>
+              <span>Detection</span>
+            </v-btn>
+            <v-btn>
+              <v-icon>face</v-icon>
+              <span>Landmarks</span>
+            </v-btn>
+            <v-btn>
+              <v-icon>how_to_reg</v-icon>
+              <span>Recognition</span>
+            </v-btn>
+            <v-btn>
+              <v-icon>insert_emoticon</v-icon>
+              <span>Emotion</span>
+            </v-btn>
+          </v-btn-toggle>
+        </v-card-actions>
+        <v-slider v-model="fps"
+                  :max="60"
+                  :min="1"
+                  :step="1"
+                  label="Desired FPS"
+                  prepend-icon="local_movies"
+                  thumb-label="always"
+                  ticks/>
+        <p>
+          <v-chip label color="orange" text-color="white">
+            <v-icon left>local_movies</v-icon> Real FPS: {{ realFps }}
+          </v-chip>
+          <v-chip label color="orange" text-color="white">
+            <v-icon left>timer</v-icon> Duration: {{ duration }} ms
+          </v-chip>
+        </p>
+      </v-card>
     </v-flex>
     <v-flex xs12 md6>
       <video
@@ -37,19 +86,31 @@ export default {
   data(){
     return {
       interval: null,
-      fps: 60,
+      fps: 15,
+      realFps: 0,
       step: 2,
       counter: 0,
       progress: 0,
+      duration: 0,
       isProgressActive: true,
-      recognition: ''
+      recognition: '',
+      withOptions: [0, 1, 2, 3]
     }
   },
 
   computed: {
     models() {
       return this.$store.state.model.list;
-    },
+    }
+  },
+
+  watch: {
+    fps: function(newFps) {
+      const videoDiv = document.getElementById("live-video")
+      const canvasDiv = document.getElementById("live-canvas")
+      const canvasCtx = canvasDiv.getContext("2d")
+      this.start(videoDiv, canvasDiv, canvasCtx, newFps)
+    }
   },
 
   async beforeMount() {
@@ -70,8 +131,47 @@ export default {
   },
 
   methods: {
+    async start(videoDiv, canvasDiv, canvasCtx, fps) {
+      let self = this
+      if (self.interval) {
+        clearInterval(self.interval)
+      }
+      self.interval = setInterval(async () => {
+        let t0 = performance.now()
+        canvasCtx.drawImage(videoDiv, 0, 0, 320, 247)
+        const options = {
+          detectionsEnabled: self.withOptions.find(o => o == 0) === 0,
+          landmarksEnabled: self.withOptions.find(o => o == 1) === 1,
+          descriptorsEnabled: self.withOptions.find(o => o == 2) === 2,
+          expressionsEnabled: self.withOptions.find(o => o == 3) === 3
+        }
+        const detections = await self.$store.dispatch('face/getFaceDetections', { canvas: canvasDiv, options })
+        if (detections.length) {
+          if (self.isProgressActive) {
+            self.increaseProgress()
+            self.isProgressActive = false
+          }
+          detections.forEach(async detection => {
+            detection.recognition = await self.$store.dispatch('face/recognize', {
+              descriptor: detection.descriptor,
+              options
+            })
+            self.$store.dispatch('face/draw',
+            {
+              canvasDiv,
+              canvasCtx,
+              detection,
+              options
+            })
+          })
+        }
+        let t1 = performance.now()
+        self.duration = (t1 - t0).toFixed(2)
+        self.realFps = (1000 / (t1 - t0)).toFixed(2)
+      }, 1000 / fps)
+    },
     async recognize(){
-      let self = this;
+      let self = this
       self.increaseProgress()
       await self.$store.dispatch('camera/startCamera')
         .then(stream => {
@@ -81,27 +181,7 @@ export default {
           videoDiv.srcObject = stream
 
           self.increaseProgress()
-
-          self.interval = setInterval(async () => {
-            canvasCtx.drawImage(videoDiv, 0, 0, 320, 247)
-            const detections = await self.$store.dispatch('face/getFaceDetections', canvasDiv)
-            if (detections.length) {
-              if (self.isProgressActive) {
-                self.increaseProgress()
-                self.isProgressActive = false
-              }
-              detections.forEach(async item => {
-                const shifted = item.forSize(canvasDiv.width, canvasDiv.height)
-                self.$store.dispatch('face/drawLandmarks', { canvasDiv, landmarks: shifted._unshiftedLandmarks } )
-                const bestMatch = await self.$store.dispatch('face/recognize', shifted.descriptor)
-                self.recognition = `${bestMatch.toString()}!`
-                self.$store.dispatch('face/drawDetection', { canvasDiv, detection: shifted._detection, recognition: self.recognition } )
-                // console.log(self.recognition)
-              })
-            } else {
-              self.recognition = ''
-            }
-          }, self.fps / 1000)
+          self.start(videoDiv, canvasDiv, canvasCtx, self.fps)
         })
     },
 

@@ -73,12 +73,19 @@ export default {
       await Promise.all(self.users.map(async user => {
         let descriptors = [];
         await Promise.all(user.photos.map(async (photo, index) => {
-          const photoId = `${user.name}${index}`;
-          const detections = await self.$store.dispatch('face/getFaceDetections', photoId)
+          const photoId = `${user.name}${index}`
+          const img = document.getElementById(photoId)
+          const options = {
+            detectionsEnabled: true,
+            landmarksEnabled: true,
+            descriptorsEnabled: true,
+            expressionsEnabled: false
+          }
+          const detections = await self.$store.dispatch('face/getFaceDetections', { canvas: img, options })
           detections.forEach(d => {
             descriptors.push({
               path: photo,
-              descriptor: d._descriptor
+              descriptor: d.descriptor
             })
           })
           self.increaseProgress()

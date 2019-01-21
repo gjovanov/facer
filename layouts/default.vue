@@ -37,7 +37,7 @@
     <v-footer :fixed="fixed" app>
       <v-flex class="text-xs-right">
         <a href="http://gjovanov.com/" style="color: white">
-          <span>gjovanov - &copy; 2018</span>
+          <span>gjovanov - &copy; 2019</span>
         </a>
         &nbsp;
       </v-flex>

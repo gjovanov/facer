@@ -5,8 +5,28 @@ export const state = () => ({
   loading: false,
   loaded: false,
   faceMatcher: null,
-  recognizeOptions: {
-    useTiny: true
+
+
+  useTiny: false,
+
+  detections: {
+    scoreThreshold: 0.5,
+    inputSize: 320,
+    boxColor: 'blue',
+    textColor: 'red',
+    lineWidth: 1,
+    fontSize: 20,
+    fontStyle: 'Georgia'
+  },
+  expressions: {
+    minConfidence: 0.2
+  },
+  landmarks: {
+    drawLines: true,
+    lineWidth: 1,
+  },
+  descriptors: {
+    withDistance: false
   }
 })
 
@@ -35,8 +55,9 @@ export const actions = {
       commit('loading')
       return Promise.all([
           faceapi.loadFaceRecognitionModel('/data/models'),
-          faceapi.loadFaceLandmarkTinyModel('/data/models'),
-          faceapi.loadTinyFaceDetectorModel('/data/models')
+          faceapi.loadFaceLandmarkModel('/data/models'),
+          faceapi.loadTinyFaceDetectorModel('/data/models'),
+          faceapi.loadFaceExpressionModel('/data/models')
         ])
         .then(() => {
           commit('load')
@@ -54,14 +75,13 @@ export const actions = {
   getFaceMatcher({ commit, state }) {
     const labeledDescriptors = []
     state.faces.forEach(face => {
-      let descriptors = []
-      face.descriptors.forEach(desc => {
+      let descriptors = face.descriptors.map(desc => {
         if (desc.descriptor) {
           let descArray = []
           for (var i in desc.descriptor) {
             descArray.push(parseFloat(desc.descriptor[i]))
           }
-          descriptors.push(new Float32Array(descArray))
+          return new Float32Array(descArray)
         }
       })
       if (descriptors.length) {
@@ -76,29 +96,66 @@ export const actions = {
     commit('setFaceMatcher', matcher)
     return matcher
   },
-  async getFaceDetections({ commit, state }, canvasDiv) {
-    const detections = await faceapi
-      .detectAllFaces(canvasDiv, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 }))
-      .withFaceLandmarks(state.recognizeOptions.useTiny)
-      .withFaceDescriptors()
-    return detections
+  async getFaceDetections({ commit, state }, { canvas, options }) {
+    let detections = faceapi
+      .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions({
+        scoreThreshold: state.detections.scoreThreshold,
+        inputSize: state.detections.inputSize
+      }))
+    if (options && options.expressionsEnabled) {
+      detections = detections.withFaceExpressions()
+    }
+    if (options && (options.landmarksEnabled || options.descriptorsEnabled)) {
+      detections = detections.withFaceLandmarks(state.useTiny)
+    }
+    if (options && options.descriptorsEnabled) {
+      detections = detections.withFaceDescriptors()
+    }
+    return await detections
   },
-  async recognize({ commit, state }, faceDescriptor) {
-    const bestMatch = await state.faceMatcher.findBestMatch(faceDescriptor)
-    return bestMatch
+  async recognize({ commit, state }, { descriptor, options }) {
+    if (options.descriptorsEnabled) {
+      const bestMatch = await state.faceMatcher.findBestMatch(descriptor)
+      return bestMatch
+    }
+    return null
   },
 
-  drawLandmarks({ commit, state }, { canvasDiv, landmarks }) {
-    faceapi.drawLandmarks(canvasDiv, landmarks, { drawLines: true })
+  draw({ commit, state }, { canvasDiv, canvasCtx, detection, options }) {
+    let emotions = ''
+      // filter only emontions above confidence treshold and exclude 'neutral'
+    if (options.expressionsEnabled && detection.expressions) {
+      emotions = detection.expressions
+        .filter(expr => expr.probability > state.expressions.minConfidence && expr.expression !== 'neutral')
+        .map(expr => expr.expression)
+        .join(' & ')
+    }
+    let name = ''
+    if (options.descriptorsEnabled && detection.recognition) {
+      name = detection.recognition.toString(state.descriptors.withDistance)
+    }
+
+    const text = `${name}${ emotions ? (name ? ' is ' : '') : '' }${emotions}`
+    const box = detection.box || detection.detection.box
+    if (options.detectionsEnabled && box) {
+      // draw box
+      canvasCtx.strokeStyle = state.detections.boxColor
+      canvasCtx.lineWidth = state.detections.lineWidth
+      canvasCtx.strokeRect(box.x, box.y, box.width, box.height)
+    }
+    if (text && detection && box) {
+      // draw text
+      const padText = 2 + state.detections.lineWidth
+      canvasCtx.fillStyle = state.detections.textColor
+      canvasCtx.font = state.detections.fontSize + "px " + state.detections.fontStyle
+      canvasCtx.fillText(text, box.x + padText, box.y + box.height + padText + (state.detections.fontSize * 0.6))
+    }
+
+    if (options.landmarksEnabled && detection.landmarks) {
+      faceapi.drawLandmarks(canvasDiv, detection.landmarks, { lineWidth: state.landmarks.lineWidth, drawLines: state.landmarks.drawLines })
+    }
   },
 
-  drawDetection({ commit, state }, { canvasDiv, detection, recognition }) {
-    const boxesWithText = [
-        new faceapi.BoxWithText(new faceapi.Rect(detection.box.x, detection.box.y, detection.box.width, detection.box.height), recognition)
-      ]
-      // faceapi.drawDetection(canvasDiv, detection, { withScore: false })
-    faceapi.drawDetection(canvasDiv, boxesWithText)
-  },
 
   async createCanvas({ commit, state }, elementId) {
     const canvas = await faceapi.createCanvasFromMedia(document.getElementById(elementId))

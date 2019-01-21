@@ -23,7 +23,7 @@
     "eslint-loader": "^2.0.0",
     "eslint-plugin-vue": "^4.0.0",
     "express": "^4.16.3",
-    "face-api.js": "^0.16.1",
+    "face-api.js": "^0.17.1",
     "multer": "^1.4.1",
     "nuxt": "^2.3.4",
     "rimraf": "^2.6.2",
