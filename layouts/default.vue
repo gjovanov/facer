@@ -1,24 +1,23 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer :mini-variant="miniVariant" :clipped="clipped" v-model="drawer" permanent fixed app>
+    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" permanent fixed app>
       <v-list>
-        <v-list-tile v-for="(item, i) in items" :to="item.to" :key="i" router>
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"/>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"/>
-          </v-list-tile-content>
-        </v-list-tile>
+        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router>
+          <v-list-item-action>
+            <v-icon v-html="item.icon" />
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar :clipped-left="clipped" fixed app>
-
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"/>
+    <v-app-bar :clipped-left="clipped" fixed app>
+      <v-btn @click.stop="miniVariant = !miniVariant" icon>
+        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'" />
       </v-btn>
-      <v-toolbar-title v-html="title"/>
-    </v-toolbar>
+      <v-toolbar-title v-html="title" />
+    </v-app-bar>
     <v-content>
       <v-container fluid>
         <v-progress-circular
@@ -26,12 +25,13 @@
           :size="200"
           :width="20"
           color="red"
-          indeterminate>
+          indeterminate
+        >
           Loading 7MB models.
           <br>
           Please be patient...
         </v-progress-circular>
-        <nuxt/>
+        <nuxt />
       </v-container>
     </v-content>
     <v-footer :fixed="fixed" app>
@@ -41,38 +41,40 @@
         </a>
         &nbsp;
       </v-flex>
-
     </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       clipped: false,
       drawer: true,
       fixed: false,
       items: [
-        { icon: "home", title: "Welcome", to: "/" },
-        { icon: "people", title: "Users", to: "/users" },
-        { icon: "wallpaper", title: "Train", to: "/train" },
-        { icon: "camera", title: "Recognize", to: "/recognize" }
+        { icon: 'home', title: 'Welcome', to: '/' },
+        { icon: 'people', title: 'Users', to: '/users' },
+        { icon: 'wallpaper', title: 'Train', to: '/train' },
+        { icon: 'camera', title: 'Recognize', to: '/recognize' }
       ],
       miniVariant: true,
       right: true,
       rightDrawer: false,
-      title: "face&reg; - Realtime Face Recognition"
-    };
+      title: 'face&reg; - Realtime Face Recognition'
+    }
   },
   computed: {
-    loading() {
+    loading () {
       return this.$store.state.face.loading
     }
   },
-  async mounted() {
-    let self = this
+  created () {
+    this.$vuetify.theme.dark = true
+  },
+  async mounted () {
+    const self = this
     await self.$store.dispatch('face/load')
   }
-};
+}
 </script>

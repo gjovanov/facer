@@ -17,27 +17,27 @@ const config = {
   head: {
     title: pkg.name,
     meta: [{
-        charset: 'utf-8'
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1'
-      },
-      {
-        hid: 'description',
-        name: 'description',
-        content: pkg.description
-      }
+      charset: 'utf-8'
+    },
+    {
+      name: 'viewport',
+      content: 'width=device-width, initial-scale=1'
+    },
+    {
+      hid: 'description',
+      name: 'description',
+      content: pkg.description
+    }
     ],
     link: [{
-        rel: 'icon',
-        type: 'image/x-icon',
-        href: '/favicon.ico'
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
-      }
+      rel: 'icon',
+      type: 'image/x-icon',
+      href: '/favicon.ico'
+    },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+    }
     ]
   },
 
@@ -51,11 +51,9 @@ const config = {
   /*
    ** Global CSS
    */
-  css: [
-    '~/assets/style/app.styl'
-  ],
+  css: [],
 
-  env: env,
+  env,
 
   serverMiddleware: [
     '~/api/index.js'
@@ -65,7 +63,7 @@ const config = {
    ** Plugins to load before mounting the App
    */
   plugins: [
-    '@/plugins/vuetify'
+    // '@/plugins/vuetify'
   ],
 
   /*
@@ -73,7 +71,8 @@ const config = {
    */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/vuetify'
   ],
   /*
    ** Axios module configuration
@@ -89,8 +88,12 @@ const config = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend (config, ctx) {
+      if (!config.node) {
+        config.node = {}
+      }
       // Run ESLint on save
+      config.node.fs = 'empty'
       if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',

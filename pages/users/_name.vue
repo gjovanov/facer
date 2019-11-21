@@ -4,12 +4,18 @@
       <h1>Photos: {{ user.name }}</h1>
       <v-dialog v-model="dialog" persistent max-width="320">
         <v-card>
-          <v-card-title class="headline">Warning!</v-card-title>
+          <v-card-title class="headline">
+            Warning!
+          </v-card-title>
           <v-card-text>Are you sure you want to delete this photo</v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="green darken-1" flat @click="hideDialog()">Disagree</v-btn>
-            <v-btn color="green darken-1" flat @click="deleteUpload()">Agree</v-btn>
+            <v-btn @click="hideDialog()" color="green darken-1" flat>
+              Disagree
+            </v-btn>
+            <v-btn @click="deleteUpload()" color="green darken-1" flat>
+              Agree
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -40,7 +46,7 @@
           <v-card flat>
             <form method="POST" class="form-documents" enctype="multipart/form-data">
               Upload photos
-              <input id="fileUpload" :multiple="multiple" type="file" name="fileUpload" @change="filesChange($event.target.name, $event.target.files)" >
+              <input id="fileUpload" :multiple="multiple" @change="filesChange($event.target.name, $event.target.files)" type="file" name="fileUpload">
             </form>
           </v-card>
         </v-tab-item>
@@ -49,21 +55,25 @@
           value="tab-2"
         >
           <v-card flat>
-            <v-btn v-if="isCameraStarted" color="secondary" @click="takePhoto">Take photo</v-btn>
+            <v-btn v-if="isCameraStarted" @click="takePhoto" color="secondary">
+              Take photo
+            </v-btn>
             <v-layout row wrap>
               <v-flex xs12 md6>
                 <video
-                  v-if="isCameraStarted"
                   id="live-video"
+                  v-if="isCameraStarted"
                   width="320"
                   height="247"
-                  autoplay/>
+                  autoplay
+                />
               </v-flex>
               <v-flex xs12 md6>
                 <canvas
                   id="live-canvas"
                   width="320"
-                  height="247"/>
+                  height="247"
+                />
               </v-flex>
             </v-layout>
           </v-card>
@@ -72,14 +82,15 @@
     </v-flex>
     <v-flex v-for="(photo, index) in user.photos"
             :key="photo"
-            xs12 md6 lg4>
+            xs12 md6 lg4
+    >
       <v-card flat tile class="d-flex">
         <v-btn
+          @click="showDialog(photo)"
           fab
           small
           color="primary"
           dark
-          @click="showDialog(photo)"
         >
           <v-icon>close</v-icon>
         </v-btn>
@@ -98,23 +109,23 @@ export default {
       tab: 'tab-1',
       multiple: true,
       selectedPhoto: null
-    };
+    }
   },
   computed: {
-    user() {
+    user () {
       const userByName = this.$store.getters['user/userByName']
       return userByName(this.$route.params.name)
     },
-    isCameraStarted() {
+    isCameraStarted () {
       return this.$store.getters['camera/isCameraStarted']
     }
   },
   watch: {
-    tab: async function(val) {
+    async tab (val) {
       if (this.tab === 'tab-2') {
         await this.$store.dispatch('camera/startCamera')
-          .then(stream => {
-            const videoDiv = document.getElementById("live-video")
+          .then((stream) => {
+            const videoDiv = document.getElementById('live-video')
             videoDiv.srcObject = stream
           })
       } else {
@@ -123,21 +134,27 @@ export default {
     }
   },
 
-  beforeDestroy() {
+  fetch ({ store }) {
+    if (!store.getters['user/isFetched']) {
+      return store.dispatch('user/getAll')
+    }
+  },
+
+  beforeDestroy () {
     this.$store.dispatch('camera/stopCamera')
   },
   methods: {
-    showDialog(photo) {
+    showDialog (photo) {
       this.dialog = true
       this.selectedPhoto = photo
     },
 
-    hideDialog() {
+    hideDialog () {
       this.dialog = false
       this.selectedPhoto = null
     },
 
-    async deleteUpload() {
+    async deleteUpload () {
       if (this.selectedPhoto) {
         const comps = this.selectedPhoto.split('/')
         await this.$store.dispatch('user/deletePhoto', {
@@ -148,39 +165,32 @@ export default {
         this.dialog = false
       }
     },
-    filesChange(fieldName, fileList) {
+    filesChange (fieldName, fileList) {
       const self = this
       const formData = new FormData()
       formData.append('user', self.user.name)
-      Array.from(Array(fileList.length).keys()).map(x => {
+      Array.from(Array(fileList.length).keys()).map((x) => {
         formData.append(fieldName, fileList[x], fileList[x].name)
-      });
+      })
       return self.$store.dispatch('user/upload', formData)
-        .then(result => {
+        .then((result) => {
           if (document) {
-            document.getElementById('fileUpload').value = ""
+            document.getElementById('fileUpload').value = ''
           }
         })
     },
 
-
-    async takePhoto() {
-      const video = document.getElementById("live-video")
-      const canvas = document.getElementById("live-canvas")
-      const canvasCtx = canvas.getContext("2d")
+    async takePhoto () {
+      const video = document.getElementById('live-video')
+      const canvas = document.getElementById('live-canvas')
+      const canvasCtx = canvas.getContext('2d')
       canvasCtx.drawImage(video, 0, 0, 320, 247)
-      const content = canvas.toDataURL("image/jpeg")
+      const content = canvas.toDataURL('image/jpeg')
       await this.$store.dispatch('user/uploadBase64', {
         user: this.user.name,
         content
       })
     }
-  },
-
-  async fetch({ store }) {
-    if (!store.getters['user/isFetched']) {
-      return store.dispatch('user/getAll')
-    }
-  },
+  }
 }
 </script>

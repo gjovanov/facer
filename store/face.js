@@ -6,7 +6,6 @@ export const state = () => ({
   loaded: false,
   faceMatcher: null,
 
-
   useTiny: false,
 
   detections: {
@@ -23,7 +22,7 @@ export const state = () => ({
   },
   landmarks: {
     drawLines: true,
-    lineWidth: 1,
+    lineWidth: 1
   },
   descriptors: {
     withDistance: false
@@ -31,54 +30,54 @@ export const state = () => ({
 })
 
 export const mutations = {
-  loading(state) {
+  loading (state) {
     state.loading = true
   },
 
-  load(state) {
+  load (state) {
     state.loading = false
     state.loaded = true
   },
 
-  setFaces(state, faces) {
+  setFaces (state, faces) {
     state.faces = faces
   },
 
-  setFaceMatcher(state, matcher) {
+  setFaceMatcher (state, matcher) {
     state.faceMatcher = matcher
   }
 }
 
 export const actions = {
-  async load({ commit, state }) {
+  load ({ commit, state }) {
     if (!state.loading && !state.loaded) {
       commit('loading')
       return Promise.all([
-          faceapi.loadFaceRecognitionModel('/data/models'),
-          faceapi.loadFaceLandmarkModel('/data/models'),
-          faceapi.loadTinyFaceDetectorModel('/data/models'),
-          faceapi.loadFaceExpressionModel('/data/models')
-        ])
+        faceapi.loadFaceRecognitionModel('/data/models'),
+        faceapi.loadFaceLandmarkModel('/data/models'),
+        faceapi.loadTinyFaceDetectorModel('/data/models'),
+        faceapi.loadFaceExpressionModel('/data/models')
+      ])
         .then(() => {
           commit('load')
         })
     }
   },
-  async getAll({ commit, state }) {
+  async getAll ({ commit, state }) {
     const data = await this.$axios.$get('/api/face/getAll')
     commit('setFaces', data)
   },
-  async save({ commit }, faces) {
+  async save ({ commit }, faces) {
     const { data } = await this.$axios.$post('/api/face/save', { faces })
     commit('setFaces', data)
   },
-  getFaceMatcher({ commit, state }) {
+  getFaceMatcher ({ commit, state }) {
     const labeledDescriptors = []
-    state.faces.forEach(face => {
-      let descriptors = face.descriptors.map(desc => {
+    state.faces.forEach((face) => {
+      const descriptors = face.descriptors.map((desc) => {
         if (desc.descriptor) {
-          let descArray = []
-          for (var i in desc.descriptor) {
+          const descArray = []
+          for (const i in desc.descriptor) {
             descArray.push(parseFloat(desc.descriptor[i]))
           }
           return new Float32Array(descArray)
@@ -96,24 +95,26 @@ export const actions = {
     commit('setFaceMatcher', matcher)
     return matcher
   },
-  async getFaceDetections({ commit, state }, { canvas, options }) {
+  async getFaceDetections ({ commit, state }, { canvas, options }) {
     let detections = faceapi
       .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions({
         scoreThreshold: state.detections.scoreThreshold,
         inputSize: state.detections.inputSize
       }))
-    if (options && options.expressionsEnabled) {
-      detections = detections.withFaceExpressions()
-    }
+
     if (options && (options.landmarksEnabled || options.descriptorsEnabled)) {
       detections = detections.withFaceLandmarks(state.useTiny)
+    }
+    if (options && options.expressionsEnabled) {
+      detections = detections.withFaceExpressions()
     }
     if (options && options.descriptorsEnabled) {
       detections = detections.withFaceDescriptors()
     }
-    return await detections
+    detections = await detections
+    return detections
   },
-  async recognize({ commit, state }, { descriptor, options }) {
+  async recognize ({ commit, state }, { descriptor, options }) {
     if (options.descriptorsEnabled) {
       const bestMatch = await state.faceMatcher.findBestMatch(descriptor)
       return bestMatch
@@ -121,21 +122,25 @@ export const actions = {
     return null
   },
 
-  draw({ commit, state }, { canvasDiv, canvasCtx, detection, options }) {
+  draw ({ commit, state }, { canvasDiv, canvasCtx, detection, options }) {
     let emotions = ''
-      // filter only emontions above confidence treshold and exclude 'neutral'
+    // filter only emontions above confidence treshold and exclude 'neutral'
     if (options.expressionsEnabled && detection.expressions) {
-      emotions = detection.expressions
-        .filter(expr => expr.probability > state.expressions.minConfidence && expr.expression !== 'neutral')
-        .map(expr => expr.expression)
-        .join(' & ')
+      for (const expr in detection.expressions) {
+        if (detection.expressions[expr] > state.expressions.minConfidence && expr !== 'neutral') {
+          emotions += ` ${expr} &`
+        }
+      }
+      if (emotions.length) {
+        emotions = emotions.substring(0, emotions.length - 2)
+      }
     }
     let name = ''
     if (options.descriptorsEnabled && detection.recognition) {
       name = detection.recognition.toString(state.descriptors.withDistance)
     }
 
-    const text = `${name}${ emotions ? (name ? ' is ' : '') : '' }${emotions}`
+    const text = `${name}${emotions ? (name ? ' is ' : '') : ''}${emotions}`
     const box = detection.box || detection.detection.box
     if (options.detectionsEnabled && box) {
       // draw box
@@ -147,17 +152,16 @@ export const actions = {
       // draw text
       const padText = 2 + state.detections.lineWidth
       canvasCtx.fillStyle = state.detections.textColor
-      canvasCtx.font = state.detections.fontSize + "px " + state.detections.fontStyle
+      canvasCtx.font = state.detections.fontSize + 'px ' + state.detections.fontStyle
       canvasCtx.fillText(text, box.x + padText, box.y + box.height + padText + (state.detections.fontSize * 0.6))
     }
 
     if (options.landmarksEnabled && detection.landmarks) {
-      faceapi.drawLandmarks(canvasDiv, detection.landmarks, { lineWidth: state.landmarks.lineWidth, drawLines: state.landmarks.drawLines })
+      faceapi.draw.drawFaceLandmarks(canvasDiv, detection.landmarks, { lineWidth: state.landmarks.lineWidth, drawLines: state.landmarks.drawLines })
     }
   },
 
-
-  async createCanvas({ commit, state }, elementId) {
+  async createCanvas ({ commit, state }, elementId) {
     const canvas = await faceapi.createCanvasFromMedia(document.getElementById(elementId))
     return canvas
   }

@@ -8,22 +8,32 @@
               v-model="name"
               :rules="nameRules"
               label="Your full name"
-              required />
-            <v-spacer/>
+              required
+            />
+            <v-spacer />
             <v-btn
               :disabled="!valid"
+              @click="register()"
               color="primary"
-              @click="register()">Register new!</v-btn>
+            >
+              Register new!
+            </v-btn>
           </v-form>
         </v-card-actions>
         <v-dialog v-model="dialog" persistent max-width="320">
           <v-card>
-            <v-card-title class="headline">Warning!</v-card-title>
+            <v-card-title class="headline">
+              Warning!
+            </v-card-title>
             <v-card-text>Are you sure you want to delete this user</v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="green darken-1" flat @click="hideDialog()">Disagree</v-btn>
-              <v-btn color="green darken-1" flat @click="deleteUpload()">Agree</v-btn>
+              <v-btn @click="hideDialog()" color="green darken-1" flat>
+                Disagree
+              </v-btn>
+              <v-btn @click="deleteUpload()" color="green darken-1" flat>
+                Agree
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -31,8 +41,8 @@
     </v-flex>
     <v-flex xs12>
       <v-list two-line subheader>
-        <v-list-tile v-for="user in users" :key="user.name" avatar>
-          <v-list-tile-avatar>
+        <v-list-item v-for="user in users" :key="user.name">
+          <v-list-item-avatar>
             <v-avatar
               slot="activator"
               size="32px"
@@ -44,44 +54,44 @@
               >
               <v-icon
                 v-else
-                color="primary">
+                color="primary"
+              >
                 person
               </v-icon>
             </v-avatar>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-sub-title>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-subtitle>
               {{ user.name }}
               <v-divider />
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
+            </v-list-item-subtitle>
+          </v-list-item-content>
 
-          <v-list-tile-action>
+          <v-list-item-action>
             <v-btn :to="'/users/' + user.name" color="primary" fab small>
               <v-icon>
                 add_a_photo
               </v-icon>
             </v-btn>
             <v-divider />
-          </v-list-tile-action>
-          <v-list-tile-action>
-            <v-btn color="primary" fab small @click="showDialog(user.name)">
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-btn @click="showDialog(user.name)" color="primary" fab small>
               <v-icon>
                 close
               </v-icon>
             </v-btn>
             <v-divider />
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
       </v-list>
-
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 export default {
-  data(){
+  data () {
     return {
       dialog: false,
       selectedUser: null,
@@ -90,47 +100,47 @@ export default {
       nameRules: [
         v => !!v || 'Full name is required',
         v => (v && v.length > 2) || 'Name must be more than 2 characters'
-      ],
+      ]
     }
   },
 
   computed: {
-    users() {
-      return this.$store.state.user.list;
+    users () {
+      return this.$store.state.user.list
     }
+  },
+  fetch ({ store }) {
+    return store.dispatch('user/getAll')
   },
 
   methods: {
-    async register() {
+    register () {
       const self = this
       if (this.$refs.form.validate()) {
         return this.$store.dispatch('user/register', this.name)
-          .then(() =>{
-            self.$router.push({ path: `/users/${self.name}`})
+          .then(() => {
+            return self.$router.push({ path: `/users/${self.name}` })
           })
       }
     },
 
-    showDialog(name) {
+    showDialog (name) {
       this.dialog = true
       this.selectedUser = name
     },
 
-    hideDialog() {
+    hideDialog () {
       this.dialog = false
       this.selectedUser = null
     },
 
-    async deleteUpload() {
+    async deleteUpload () {
       if (this.selectedUser) {
         await this.$store.dispatch('user/delete', this.selectedUser)
         this.selectedUser = null
         this.dialog = false
       }
     }
-  },
-  async fetch({ store }) {
-    return store.dispatch('user/getAll');
   }
 }
 </script>

@@ -2,7 +2,8 @@
   <v-layout row
             align-center
             justify-center
-            wrap>
+            wrap
+  >
     <v-flex>
       <h1>Recognize</h1>
     </v-flex>
@@ -54,13 +55,18 @@
                   label="Desired FPS"
                   prepend-icon="local_movies"
                   thumb-label="always"
-                  ticks/>
+                  ticks
+        />
         <p>
           <v-chip label color="orange" text-color="white">
-            <v-icon left>local_movies</v-icon> Real FPS: {{ realFps }}
+            <v-icon left>
+              local_movies
+            </v-icon> Real FPS: {{ realFps }}
           </v-chip>
           <v-chip label color="orange" text-color="white">
-            <v-icon left>timer</v-icon> Duration: {{ duration }} ms
+            <v-icon left>
+              timer
+            </v-icon> Duration: {{ duration }} ms
           </v-chip>
         </p>
       </v-card>
@@ -70,20 +76,22 @@
         id="live-video"
         width="320"
         height="247"
-        autoplay/>
+        autoplay
+      />
     </v-flex>
     <v-flex xs12 md6>
       <canvas
         id="live-canvas"
         width="320"
-        height="247"/>
+        height="247"
+      />
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 export default {
-  data(){
+  data () {
     return {
       interval: null,
       fps: 15,
@@ -99,22 +107,22 @@ export default {
   },
 
   computed: {
-    models() {
-      return this.$store.state.model.list;
+    models () {
+      return this.$store.state.model.list
     }
   },
 
   watch: {
-    fps: function(newFps) {
-      const videoDiv = document.getElementById("live-video")
-      const canvasDiv = document.getElementById("live-canvas")
-      const canvasCtx = canvasDiv.getContext("2d")
+    fps (newFps) {
+      const videoDiv = document.getElementById('live-video')
+      const canvasDiv = document.getElementById('live-canvas')
+      const canvasCtx = canvasDiv.getContext('2d')
       this.start(videoDiv, canvasDiv, canvasCtx, newFps)
     }
   },
 
-  async beforeMount() {
-    let self = this;
+  async beforeMount () {
+    const self = this
     await self.$store.dispatch('face/getAll')
       .then(() => self.$store.dispatch('face/getFaceMatcher'))
   },
@@ -123,27 +131,27 @@ export default {
     await this.recognize()
   },
 
-  beforeDestroy() {
-    if (this.interval){
+  beforeDestroy () {
+    if (this.interval) {
       clearInterval(this.interval)
     }
     this.$store.dispatch('camera/stopCamera')
   },
 
   methods: {
-    async start(videoDiv, canvasDiv, canvasCtx, fps) {
-      let self = this
+    start (videoDiv, canvasDiv, canvasCtx, fps) {
+      const self = this
       if (self.interval) {
         clearInterval(self.interval)
       }
       self.interval = setInterval(async () => {
-        let t0 = performance.now()
+        const t0 = performance.now()
         canvasCtx.drawImage(videoDiv, 0, 0, 320, 247)
         const options = {
-          detectionsEnabled: self.withOptions.find(o => o == 0) === 0,
-          landmarksEnabled: self.withOptions.find(o => o == 1) === 1,
-          descriptorsEnabled: self.withOptions.find(o => o == 2) === 2,
-          expressionsEnabled: self.withOptions.find(o => o == 3) === 3
+          detectionsEnabled: self.withOptions.find(o => o === 0) === 0,
+          landmarksEnabled: self.withOptions.find(o => o === 1) === 1,
+          descriptorsEnabled: self.withOptions.find(o => o === 2) === 2,
+          expressionsEnabled: self.withOptions.find(o => o === 3) === 3
         }
         const detections = await self.$store.dispatch('face/getFaceDetections', { canvas: canvasDiv, options })
         if (detections.length) {
@@ -151,33 +159,33 @@ export default {
             self.increaseProgress()
             self.isProgressActive = false
           }
-          detections.forEach(async detection => {
+          detections.forEach(async (detection) => {
             detection.recognition = await self.$store.dispatch('face/recognize', {
               descriptor: detection.descriptor,
               options
             })
             self.$store.dispatch('face/draw',
-            {
-              canvasDiv,
-              canvasCtx,
-              detection,
-              options
-            })
+              {
+                canvasDiv,
+                canvasCtx,
+                detection,
+                options
+              })
           })
         }
-        let t1 = performance.now()
+        const t1 = performance.now()
         self.duration = (t1 - t0).toFixed(2)
         self.realFps = (1000 / (t1 - t0)).toFixed(2)
       }, 1000 / fps)
     },
-    async recognize(){
-      let self = this
+    async recognize () {
+      const self = this
       self.increaseProgress()
       await self.$store.dispatch('camera/startCamera')
-        .then(stream => {
-          const videoDiv = document.getElementById("live-video")
-          const canvasDiv = document.getElementById("live-canvas")
-          const canvasCtx = canvasDiv.getContext("2d")
+        .then((stream) => {
+          const videoDiv = document.getElementById('live-video')
+          const canvasDiv = document.getElementById('live-canvas')
+          const canvasCtx = canvasDiv.getContext('2d')
           videoDiv.srcObject = stream
 
           self.increaseProgress()
@@ -185,8 +193,8 @@ export default {
         })
     },
 
-    increaseProgress(){
-      let self = this;
+    increaseProgress () {
+      const self = this
       self.progress = (100 / self.step) * ++self.counter
     }
   }
