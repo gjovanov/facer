@@ -8,7 +8,7 @@
     "api": "cross-env NODE_ENV=development node api/start.js",
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production pm2 start server/index.js -i 0 --attach",
+    "start": "cross-env NODE_ENV=production pm2 start server/index.js -i 0 --attach -f",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
@@ -23,6 +23,7 @@
     "face-api.js": "^0.21.0",
     "multer": "^1.4.2",
     "nuxt": "^2.10.2",
+    "pm2": "^4.2.1",
     "rimraf": "^3.0.0",
     "sharp": "^0.23.3",
     "vuetify": "^2.1.11",

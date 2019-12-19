@@ -4,9 +4,10 @@ const express = require('express')
 const { join } = require('path')
 const app = express()
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: "50mb" }))
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: true,
+  limit: "50mb"
 }))
 app.use(cookieParser())
 app.use(function(req, res, next) {
