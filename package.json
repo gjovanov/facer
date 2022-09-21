@@ -27,7 +27,7 @@
     "pm2": "^4.2.1",
     "rimraf": "^3.0.0",
     "sharp": "^0.23.3",
-    "vuetify": "^2.1.11",
+    "vuetify": "^2.6.10",
     "webrtc-adapter": "^7.3.0"
   },
   "devDependencies": {
